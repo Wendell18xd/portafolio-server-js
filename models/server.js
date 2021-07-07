@@ -1,7 +1,10 @@
 const express = require("express");
+const http = require("http");
+const socketio = require("socket.io");
 const cors = require("cors");
 const { dbConnection } = require("../db/config");
 const { rewrite } = require("../controllers/rewrite");
+const Sockets = require("./Sockets");
 
 const authRouter = require("../routers/auth");
 const mensajesRouter = require("../routers/mensajes");
@@ -18,6 +21,13 @@ class Server {
 
     //Conectar a base de datos
     this.conectarDB();
+    //http server
+    this.server = http.createServer(this.app);
+    //Conexion socket
+    this.io = socketio(this.server, {});
+    //Inicializar server socket
+    this.sockets = new Sockets(this.io);
+    this.sockets.socketEvents();
     //Middlewares
     this.middlewares();
     //Rutas de nu aplicacion
@@ -46,7 +56,7 @@ class Server {
   }
 
   listen() {
-    this.app.listen(this.port, () => {
+    this.server.listen(this.port, () => {
       console.log("Servidor Corriendo en", this.port);
     });
   }
