@@ -1,5 +1,10 @@
 const express = require("express");
 const cors = require("cors");
+const { dbConnection } = require("../db/config");
+const { rewrite } = require("../controllers/rewrite");
+
+const authRouter = require("../routers/auth");
+const mensajesRouter = require("../routers/mensajes");
 
 class Server {
   constructor() {
@@ -17,6 +22,10 @@ class Server {
     this.middlewares();
     //Rutas de nu aplicacion
     this.routes();
+  }
+
+  async conectarDB() {
+    await dbConnection();
   }
 
   middlewares() {
